@@ -46,6 +46,26 @@ app.post('/data', async (req, res) => {
   res.send('SERVER : Data received successfully');
 });
 
+app.post('/compare-scores', async (req, res) => {
+  const { score } = req.body;
+  console.log(`SERVER : Received score from Node-RED: ${score}`);
+
+  try {
+    const allData = await Data.find({});
+    const scores = allData.map(data => data.score);
+    const isHigher = scores.every(dbScore => score > dbScore);
+
+    res.json({
+      receivedScore: score,
+      isHigher,
+      scores
+    });
+  } catch (error) {
+    console.error('SERVER : Error comparing scores:', error);
+    res.status(500).send('SERVER : Error comparing scores');
+  }
+});
+
 
 // Function to find the Arduino board
 async function findArduino() {
@@ -138,3 +158,4 @@ function otherFunction() {
   console.log('SERVER : Executing other function...');
   // Add the implementation of the other function here
 }
+

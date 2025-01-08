@@ -28,9 +28,10 @@ const dataSchema = new Schema({
 
 const Data = model('Data', dataSchema);
 
+//Getting preferences from node-red
 app.post('/data', async (req, res) => {
-  const { temperature, sound, light } = req.body;
-  console.log(`SERVER : Temperature: ${temperature}, Sound: ${sound}, Light: ${light}`);
+  const { temperature, sound, light, score } = req.body;
+  console.log(`SERVER : Temperature: ${temperature}, Sound: ${sound}, Light: ${light}, Score: ${score}`);
 
   try {
     const response = await post('http://localhost:1880/data', {
@@ -65,7 +66,6 @@ app.post('/compare-scores', async (req, res) => {
     res.status(500).send('SERVER : Error comparing scores');
   }
 });
-
 
 // Function to find the Arduino board
 async function findArduino() {

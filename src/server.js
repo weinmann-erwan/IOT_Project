@@ -15,6 +15,7 @@ const app = express();
 app.use(json());
 
 let roomId = '';
+let waiting = false;
 
 // Define a schema and model for the data
 const dataSchema = new Schema({
@@ -28,43 +29,48 @@ const dataSchema = new Schema({
 
 const Data = model('Data', dataSchema);
 
-//Getting preferences from node-red
+// Function to compare scores
+async function compare(score) {
+  try {
+    const allData = await Data.find({});
+    const roomsWithDifferences = allData.map(data => ({
+      roomId: data.roomId,
+      score: data.score,
+      difference: Math.abs(data.score - score)
+    }));
+
+    // Sort rooms by the difference in ascending order
+    roomsWithDifferences.sort((a, b) => a.difference - b.difference);
+
+    console.log(`SERVER : Received score: ${score}`);
+    console.log('SERVER : Rooms sorted by score difference:', roomsWithDifferences);
+
+    return {
+      receivedScore: score,
+      rooms: roomsWithDifferences
+    };
+  } catch (error) {
+    console.error('SERVER : Error comparing scores:', error);
+    throw error;
+  }
+}
+
+// Getting preferences from node-red
 app.post('/data', async (req, res) => {
   const { temperature, sound, light, score } = req.body;
-  console.log(`SERVER : Temperature: ${temperature}, Sound: ${sound}, Light: ${light}, Score: ${score}`);
+  //console.log(`SERVER : Temperature: ${temperature}, Sound: ${sound}, Light: ${light}, Score: ${score}`);
 
-  try {
-    const response = await post('http://localhost:1880/data', {
-      temperature,
-      sound,
-      light
-    });
-    console.log('SERVER : Data sent to Node-RED:', response.data);
-  } catch (error) {
-    console.error('SERVER : Error sending data to Node-RED:', error);
+  if (waitingForNodeRedData) {
+    console.log('SERVER : Data received from Node-RED while waiting:', req.body);
+    try {
+      const comparisonResult = await compare(score);
+      console.log('SERVER : Comparison result:', comparisonResult);
+    } catch (error) {
+      console.error('SERVER : Error during comparison:', error);
+    }
   }
 
   res.send('SERVER : Data received successfully');
-});
-
-app.post('/compare-scores', async (req, res) => {
-  const { score } = req.body;
-  console.log(`SERVER : Received score from Node-RED: ${score}`);
-
-  try {
-    const allData = await Data.find({});
-    const scores = allData.map(data => data.score);
-    const isHigher = scores.every(dbScore => score > dbScore);
-
-    res.json({
-      receivedScore: score,
-      isHigher,
-      scores
-    });
-  } catch (error) {
-    console.error('SERVER : Error comparing scores:', error);
-    res.status(500).send('SERVER : Error comparing scores');
-  }
 });
 
 // Function to find the Arduino board
@@ -138,8 +144,8 @@ const dbURI = 'mongodb+srv://ddcd:ddcd@rooms.3och0.mongodb.net/?retryWrites=true
               });
             } else if (choice === '2') {
               console.log('SERVER : Launching server with another function...');
-              // Call the other function here
-              otherFunction();
+              waiting = true;
+              console.log('SERVER : Waiting for data from node-red...');
             } else {
               console.log('SERVER : Invalid choice. Exiting...');
               process.exit(1);

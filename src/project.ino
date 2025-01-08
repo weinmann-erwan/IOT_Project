@@ -14,10 +14,37 @@ const int tempPin = A0;
 const int soundPin = A1;
 const int lightPin = A2;
 
+// Normalization ranges (assume European standards or defaults)
+const float tempMin = 15.0;
+const float tempMax = 25.0;
+const float lightMin = 0.0;
+const float lightMax = 10.0;
+const float soundMin = 0.0;
+const float soundMax = 10.0;
+
+// Weights for scoring (adjust these as per user preference)
+const float weightTemp = 0.33;
+const float weightLight = 0.33;
+const float weightSound = 0.34;
+
 // Scoring algorithm
-int calculateScore(float temperature, float sound, float light) {
-  // Example scoring formula: adjust based on your requirements
-  return (int)(temperature * 0.4 + sound * 0.3 + light * 0.3);
+float calculateScore(float temperature, float sound, float light) {
+  // Normalize sensor values
+  float normalizedTemp = (temperature - tempMin) / (tempMax - tempMin);
+  float normalizedLight = (light - lightMin) / (lightMax - lightMin);
+  float normalizedSound = (sound - soundMin) / (soundMax - soundMin);
+
+  // Clamp values to 0-1 range (in case sensors exceed expected bounds)
+  normalizedTemp = min(max(normalizedTemp, 0.0), 1.0);
+  normalizedLight = min(max(normalizedLight, 0.0), 1.0);
+  normalizedSound = min(max(normalizedSound, 0.0), 1.0);
+
+  // Compute weighted score
+  float score = (weightTemp * normalizedTemp) +
+                (weightLight * normalizedLight) +
+                (weightSound * normalizedSound);
+
+  return score;
 }
 
 void setup() {

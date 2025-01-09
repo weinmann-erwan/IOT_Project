@@ -58,13 +58,35 @@ async function compare(score) {
 // Getting preferences from node-red
 app.post('/data', async (req, res) => {
   const { temperature, sound, light, score } = req.body;
-  //console.log(`SERVER : Temperature: ${temperature}, Sound: ${sound}, Light: ${light}, Score: ${score}`);
+  console.log(`SERVER : Temperature: ${temperature}, Sound: ${sound}, Light: ${light}, Score: ${score}`);
 
   if (waiting) {
     console.log('SERVER : Data received from Node-RED while waiting:', req.body);
     try {
-      const comparisonResult = await compare(score);
-      console.log('SERVER : Comparison result:', comparisonResult);
+      const allData = await Data.find({});
+      const roomsWithDifferences = allData.map(data => ({
+        roomId: data.roomId,
+        temperature: data.temperature,
+        sound: data.sound,
+        light: data.light,
+        score: data.score,
+        difference: Math.abs(data.score - score)
+      }));
+
+      // Sort rooms by the difference in ascending order
+      roomsWithDifferences.sort((a, b) => a.difference - b.difference);
+
+      console.log(`SERVER : Received score: ${score}`);
+      console.log('SERVER : Rooms sorted by score difference:', roomsWithDifferences);
+
+      const comparisonResult = {
+        receivedScore: score,
+        rooms: roomsWithDifferences
+      };
+
+      // Send the comparison result to Node-RED
+      await axios.post('http://localhost:1880/compare', comparisonResult);
+      console.log('SERVER : Comparison result sent to Node-RED');
     } catch (error) {
       console.error('SERVER : Error during comparison:', error);
     }

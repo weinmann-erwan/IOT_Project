@@ -60,7 +60,7 @@ app.post('/data', async (req, res) => {
   const { temperature, sound, light, score } = req.body;
   //console.log(`SERVER : Temperature: ${temperature}, Sound: ${sound}, Light: ${light}, Score: ${score}`);
 
-  if (waitingForNodeRedData) {
+  if (waiting) {
     console.log('SERVER : Data received from Node-RED while waiting:', req.body);
     try {
       const comparisonResult = await compare(score);

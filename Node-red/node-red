@@ -1,0 +1,482 @@
+[
+    {
+        "id": "eb9cf62ca87ab4b9",
+        "type": "tab",
+        "label": "Project",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "86676a1f78d34252",
+        "type": "function",
+        "z": "eb9cf62ca87ab4b9",
+        "name": "Score",
+        "func": "// Preferences and sensor values from flow\nlet preferences = flow.get('preferences') || { temperature: 22, light: 5, sound: 3 };\nlet sensorData = {\n    temperature: msg.payload.temperature || 22,\n    light: msg.payload.light || 7,\n    sound: msg.payload.sound || 3\n};\n\n\n// Normalization ranges (assume European standards or defaults)\nlet tempRange = { min: 15, max: 25 }; // Temperature range\nlet lightRange = { min: 0, max: 10 }; // Light range (e.g., 0-10)\nlet soundRange = { min: 0, max: 10 }; // Sound range (e.g., 0-10)\n\n// Normalize sensor values\nlet normalizedTemp = (sensorData.temperature - tempRange.min) / (tempRange.max - tempRange.min);\nlet normalizedLight = (sensorData.light - lightRange.min) / (lightRange.max - lightRange.min);\nlet normalizedSound = (sensorData.sound - soundRange.min) / (soundRange.max - soundRange.min);\n\n// Clamp values to 0-1 range (in case sensors exceed expected bounds)\nnormalizedTemp = Math.min(Math.max(normalizedTemp, 0), 1);\nnormalizedLight = Math.min(Math.max(normalizedLight, 0), 1);\nnormalizedSound = Math.min(Math.max(normalizedSound, 0), 1);\n\n// Weights for scoring (adjust these as per user preference)\nlet weights = {\n    temperature: 0.33,\n    light: 0.33,\n    sound: 0.34\n};\n\n// Compute weighted score\nlet score = \n    (weights.temperature * normalizedTemp) +\n    (weights.light * normalizedLight) +\n    (weights.sound * normalizedSound);\n\n// Output the score and normalized values for debugging\nmsg.payload = {\n    temperature: sensorData.temperature,\n    light: sensorData.light,\n    sound: sensorData.sound,\n    score: score\n};\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 710,
+        "y": 380,
+        "wires": [
+            [
+                "cd1f634af3833daf",
+                "93df513e8b48e50b"
+            ]
+        ]
+    },
+    {
+        "id": "049022b38f441a0f",
+        "type": "ui-slider",
+        "z": "eb9cf62ca87ab4b9",
+        "group": "7822220efa2bae28",
+        "name": "Temperature",
+        "label": "Temperature",
+        "tooltip": "",
+        "order": 1,
+        "width": 0,
+        "height": 0,
+        "passthru": false,
+        "outs": "end",
+        "topic": "temperature",
+        "topicType": "str",
+        "thumbLabel": "always",
+        "showTicks": "always",
+        "min": "15",
+        "max": "25",
+        "step": "0.5",
+        "className": "",
+        "iconPrepend": "15",
+        "iconAppend": "25",
+        "color": "",
+        "colorTrack": "",
+        "colorThumb": "",
+        "x": 110,
+        "y": 300,
+        "wires": [
+            [
+                "99b2af5bb20d40d6"
+            ]
+        ]
+    },
+    {
+        "id": "ab52c8021e8aa2a2",
+        "type": "ui-slider",
+        "z": "eb9cf62ca87ab4b9",
+        "group": "7822220efa2bae28",
+        "name": "Sound",
+        "label": "Sound",
+        "tooltip": "",
+        "order": 3,
+        "width": 0,
+        "height": 0,
+        "passthru": false,
+        "outs": "end",
+        "topic": "sound",
+        "topicType": "str",
+        "thumbLabel": "always",
+        "showTicks": "always",
+        "min": 0,
+        "max": 10,
+        "step": 1,
+        "className": "",
+        "iconPrepend": "0",
+        "iconAppend": "10",
+        "color": "",
+        "colorTrack": "",
+        "colorThumb": "",
+        "x": 130,
+        "y": 460,
+        "wires": [
+            [
+                "99b2af5bb20d40d6"
+            ]
+        ]
+    },
+    {
+        "id": "0a20709ad5d2c6cc",
+        "type": "ui-slider",
+        "z": "eb9cf62ca87ab4b9",
+        "group": "7822220efa2bae28",
+        "name": "Light",
+        "label": "Light",
+        "tooltip": "",
+        "order": 2,
+        "width": 0,
+        "height": 0,
+        "passthru": false,
+        "outs": "end",
+        "topic": "light",
+        "topicType": "str",
+        "thumbLabel": "always",
+        "showTicks": "always",
+        "min": 0,
+        "max": 10,
+        "step": 1,
+        "className": "",
+        "iconPrepend": "0",
+        "iconAppend": "10",
+        "color": "",
+        "colorTrack": "",
+        "colorThumb": "",
+        "x": 130,
+        "y": 380,
+        "wires": [
+            [
+                "99b2af5bb20d40d6"
+            ]
+        ]
+    },
+    {
+        "id": "f32bc8054672144b",
+        "type": "debug",
+        "z": "eb9cf62ca87ab4b9",
+        "name": "temp",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 590,
+        "y": 300,
+        "wires": []
+    },
+    {
+        "id": "b3c0e9c63d2f07de",
+        "type": "json",
+        "z": "eb9cf62ca87ab4b9",
+        "name": "JAll",
+        "property": "payload",
+        "action": "obj",
+        "pretty": false,
+        "x": 510,
+        "y": 380,
+        "wires": [
+            [
+                "f32bc8054672144b",
+                "86676a1f78d34252"
+            ]
+        ]
+    },
+    {
+        "id": "99b2af5bb20d40d6",
+        "type": "function",
+        "z": "eb9cf62ca87ab4b9",
+        "name": "Set Defaults",
+        "func": "let preferences = flow.get('preferences') || {\n    temperature: 22,\n    light: 5,\n    sound: 3\n};\n\nif (msg.topic === 'temperature') {\n    preferences.temperature = msg.payload;\n} else if (msg.topic === 'light') {\n    preferences.light = msg.payload;\n} else if (msg.topic === 'sound') {\n    preferences.sound = msg.payload;\n}\n \nflow.set('preferences', preferences);\nmsg.payload = preferences;\nreturn msg;\n\n",
+        "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 350,
+        "y": 380,
+        "wires": [
+            [
+                "b3c0e9c63d2f07de"
+            ]
+        ]
+    },
+    {
+        "id": "cd1f634af3833daf",
+        "type": "debug",
+        "z": "eb9cf62ca87ab4b9",
+        "name": "function",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 860,
+        "y": 300,
+        "wires": []
+    },
+    {
+        "id": "4b8fd3c670d277c6",
+        "type": "http request",
+        "z": "eb9cf62ca87ab4b9",
+        "name": "Score",
+        "method": "POST",
+        "ret": "obj",
+        "paytoqs": "ignore",
+        "url": "http://localhost:3000/data",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "",
+        "senderr": false,
+        "headers": [
+            {
+                "keyType": "other",
+                "keyValue": "Content-Type",
+                "valueType": "other",
+                "valueValue": "application/json"
+            }
+        ],
+        "x": 970,
+        "y": 380,
+        "wires": [
+            [
+                "451411839402024a",
+                "98d17be707e8fcf6"
+            ]
+        ]
+    },
+    {
+        "id": "451411839402024a",
+        "type": "debug",
+        "z": "eb9cf62ca87ab4b9",
+        "name": "debug 9",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1120,
+        "y": 460,
+        "wires": []
+    },
+    {
+        "id": "93df513e8b48e50b",
+        "type": "json",
+        "z": "eb9cf62ca87ab4b9",
+        "name": "",
+        "property": "payload.score",
+        "action": "",
+        "pretty": false,
+        "x": 850,
+        "y": 440,
+        "wires": [
+            [
+                "4b8fd3c670d277c6",
+                "734217e4bec6dcc8",
+                "74e66de3cb2697b2"
+            ]
+        ]
+    },
+    {
+        "id": "734217e4bec6dcc8",
+        "type": "debug",
+        "z": "eb9cf62ca87ab4b9",
+        "name": "debug 10",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1000,
+        "y": 620,
+        "wires": []
+    },
+    {
+        "id": "74e66de3cb2697b2",
+        "type": "ui-table",
+        "z": "eb9cf62ca87ab4b9",
+        "group": "7822220efa2bae28",
+        "name": "Results",
+        "label": "text",
+        "order": 4,
+        "width": 0,
+        "height": 0,
+        "maxrows": 0,
+        "passthru": false,
+        "autocols": true,
+        "showSearch": false,
+        "selectionType": "none",
+        "columns": [],
+        "mobileBreakpoint": "sm",
+        "mobileBreakpointType": "defaults",
+        "action": "replace",
+        "x": 1040,
+        "y": 520,
+        "wires": [
+            [
+                "14380525502ee9f9"
+            ]
+        ]
+    },
+    {
+        "id": "14380525502ee9f9",
+        "type": "debug",
+        "z": "eb9cf62ca87ab4b9",
+        "name": "debug 11",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1180,
+        "y": 520,
+        "wires": []
+    },
+    {
+        "id": "98d17be707e8fcf6",
+        "type": "http request",
+        "z": "eb9cf62ca87ab4b9",
+        "name": "",
+        "method": "GET",
+        "ret": "txt",
+        "paytoqs": "ignore",
+        "url": "http://localhost:3000/compare",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "",
+        "senderr": false,
+        "headers": [],
+        "x": 1170,
+        "y": 320,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "954f7f8db12db2cb",
+        "type": "ui_spacer",
+        "z": "eb9cf62ca87ab4b9",
+        "name": "spacer",
+        "group": "77a601d0fdedb785",
+        "order": 1,
+        "width": 1,
+        "height": 1
+    },
+    {
+        "id": "7822220efa2bae28",
+        "type": "ui-group",
+        "name": "Test",
+        "page": "dea7e770e64de90d",
+        "width": "6",
+        "height": "1",
+        "order": 1,
+        "showTitle": true,
+        "className": "",
+        "visible": "true",
+        "disabled": "false",
+        "groupType": "default"
+    },
+    {
+        "id": "77a601d0fdedb785",
+        "type": "ui_group",
+        "name": "UserInput",
+        "tab": "194cd907622b9fab",
+        "order": 1,
+        "disp": true,
+        "width": "6",
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "dea7e770e64de90d",
+        "type": "ui-page",
+        "name": "Page 1",
+        "ui": "96f011156eb7c0bf",
+        "path": "/page1",
+        "icon": "home",
+        "layout": "grid",
+        "theme": "9cc72d51b53e786f",
+        "breakpoints": [
+            {
+                "name": "Default",
+                "px": 0,
+                "cols": 3
+            },
+            {
+                "name": "Tablet",
+                "px": 576,
+                "cols": 6
+            },
+            {
+                "name": "Small Desktop",
+                "px": 768,
+                "cols": 9
+            },
+            {
+                "name": "Desktop",
+                "px": 1024,
+                "cols": 12
+            }
+        ],
+        "order": 1,
+        "className": "",
+        "visible": "true",
+        "disabled": "false"
+    },
+    {
+        "id": "194cd907622b9fab",
+        "type": "ui_tab",
+        "name": "Homepage",
+        "icon": "dashboard",
+        "order": 1,
+        "disabled": false,
+        "hidden": false
+    },
+    {
+        "id": "96f011156eb7c0bf",
+        "type": "ui-base",
+        "name": "My Dashboard",
+        "path": "/dashboard",
+        "appIcon": "",
+        "includeClientData": true,
+        "acceptsClientConfig": [
+            "ui-notification",
+            "ui-control",
+            "ui-form",
+            "ui-text-input",
+            "ui-template",
+            "ui-markdown",
+            "ui-gauge",
+            "ui-chart",
+            "ui-table",
+            "ui-text",
+            "ui-switch",
+            "ui-slider",
+            "ui-radio-group",
+            "ui-dropdown",
+            "ui-button-group",
+            "ui-button",
+            "ui-number-input",
+            "ui-file-input"
+        ],
+        "showPathInSidebar": false,
+        "showPageTitle": true,
+        "navigationStyle": "default",
+        "titleBarStyle": "default"
+    },
+    {
+        "id": "9cc72d51b53e786f",
+        "type": "ui-theme",
+        "name": "Default Theme",
+        "colors": {
+            "surface": "#ffffff",
+            "primary": "#0094CE",
+            "bgPage": "#eeeeee",
+            "groupBg": "#ffffff",
+            "groupOutline": "#cccccc"
+        },
+        "sizes": {
+            "density": "default",
+            "pagePadding": "12px",
+            "groupGap": "12px",
+            "groupBorderRadius": "4px",
+            "widgetGap": "12px"
+        }
+    }
+]

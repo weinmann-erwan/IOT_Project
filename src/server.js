@@ -165,7 +165,7 @@ const dbURI = 'mongodb+srv://ddcd:ddcd@rooms.3och0.mongodb.net/?retryWrites=true
                 });
               });
             } else if (choice === '2') {
-              console.log('SERVER : Launching server with another function...');
+              console.log('SERVER : Launching server to compare preferecnes with registered rooms...');
               waiting = true;
               console.log('SERVER : Waiting for data from node-red...');
             } else {

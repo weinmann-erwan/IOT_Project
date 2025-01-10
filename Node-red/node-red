@@ -1,6 +1,6 @@
 [
     {
-        "id": "eb9cf62ca87ab4b9",
+        "id": "f108df3a26087173",
         "type": "tab",
         "label": "Project",
         "disabled": false,
@@ -8,9 +8,9 @@
         "env": []
     },
     {
-        "id": "86676a1f78d34252",
+        "id": "86baffad58c54763",
         "type": "function",
-        "z": "eb9cf62ca87ab4b9",
+        "z": "f108df3a26087173",
         "name": "Score",
         "func": "// Preferences and sensor values from flow\nlet preferences = flow.get('preferences') || { temperature: 22, light: 5, sound: 3 };\nlet sensorData = {\n    temperature: msg.payload.temperature || 22,\n    light: msg.payload.light || 7,\n    sound: msg.payload.sound || 3\n};\n\n\n// Normalization ranges (assume European standards or defaults)\nlet tempRange = { min: 15, max: 25 }; // Temperature range\nlet lightRange = { min: 0, max: 10 }; // Light range (e.g., 0-10)\nlet soundRange = { min: 0, max: 10 }; // Sound range (e.g., 0-10)\n\n// Normalize sensor values\nlet normalizedTemp = (sensorData.temperature - tempRange.min) / (tempRange.max - tempRange.min);\nlet normalizedLight = (sensorData.light - lightRange.min) / (lightRange.max - lightRange.min);\nlet normalizedSound = (sensorData.sound - soundRange.min) / (soundRange.max - soundRange.min);\n\n// Clamp values to 0-1 range (in case sensors exceed expected bounds)\nnormalizedTemp = Math.min(Math.max(normalizedTemp, 0), 1);\nnormalizedLight = Math.min(Math.max(normalizedLight, 0), 1);\nnormalizedSound = Math.min(Math.max(normalizedSound, 0), 1);\n\n// Weights for scoring (adjust these as per user preference)\nlet weights = {\n    temperature: 0.33,\n    light: 0.33,\n    sound: 0.34\n};\n\n// Compute weighted score\nlet score = \n    (weights.temperature * normalizedTemp) +\n    (weights.light * normalizedLight) +\n    (weights.sound * normalizedSound);\n\n// Output the score and normalized values for debugging\nmsg.payload = {\n    temperature: sensorData.temperature,\n    light: sensorData.light,\n    sound: sensorData.sound,\n    score: score\n};\nreturn msg;",
         "outputs": 1,
@@ -23,16 +23,16 @@
         "y": 380,
         "wires": [
             [
-                "cd1f634af3833daf",
-                "93df513e8b48e50b"
+                "92ffefcfa47aba12",
+                "8bbb4467210ef9dd"
             ]
         ]
     },
     {
-        "id": "049022b38f441a0f",
+        "id": "665032cca8f9b754",
         "type": "ui-slider",
-        "z": "eb9cf62ca87ab4b9",
-        "group": "7822220efa2bae28",
+        "z": "f108df3a26087173",
+        "group": "9fddb19420dfef5a",
         "name": "Temperature",
         "label": "Temperature",
         "tooltip": "",
@@ -58,15 +58,15 @@
         "y": 300,
         "wires": [
             [
-                "99b2af5bb20d40d6"
+                "d25a5585f66733a6"
             ]
         ]
     },
     {
-        "id": "ab52c8021e8aa2a2",
+        "id": "d2cf73448bc6cfe4",
         "type": "ui-slider",
-        "z": "eb9cf62ca87ab4b9",
-        "group": "7822220efa2bae28",
+        "z": "f108df3a26087173",
+        "group": "9fddb19420dfef5a",
         "name": "Sound",
         "label": "Sound",
         "tooltip": "",
@@ -92,15 +92,15 @@
         "y": 460,
         "wires": [
             [
-                "99b2af5bb20d40d6"
+                "d25a5585f66733a6"
             ]
         ]
     },
     {
-        "id": "0a20709ad5d2c6cc",
+        "id": "f69d95efb01380d8",
         "type": "ui-slider",
-        "z": "eb9cf62ca87ab4b9",
-        "group": "7822220efa2bae28",
+        "z": "f108df3a26087173",
+        "group": "9fddb19420dfef5a",
         "name": "Light",
         "label": "Light",
         "tooltip": "",
@@ -126,14 +126,14 @@
         "y": 380,
         "wires": [
             [
-                "99b2af5bb20d40d6"
+                "d25a5585f66733a6"
             ]
         ]
     },
     {
-        "id": "f32bc8054672144b",
+        "id": "173ed510b219e2df",
         "type": "debug",
-        "z": "eb9cf62ca87ab4b9",
+        "z": "f108df3a26087173",
         "name": "temp",
         "active": true,
         "tosidebar": true,
@@ -143,14 +143,14 @@
         "targetType": "msg",
         "statusVal": "",
         "statusType": "auto",
-        "x": 590,
+        "x": 710,
         "y": 300,
         "wires": []
     },
     {
-        "id": "b3c0e9c63d2f07de",
+        "id": "6b3922319f4724b2",
         "type": "json",
-        "z": "eb9cf62ca87ab4b9",
+        "z": "f108df3a26087173",
         "name": "JAll",
         "property": "payload",
         "action": "obj",
@@ -159,15 +159,15 @@
         "y": 380,
         "wires": [
             [
-                "f32bc8054672144b",
-                "86676a1f78d34252"
+                "173ed510b219e2df",
+                "86baffad58c54763"
             ]
         ]
     },
     {
-        "id": "99b2af5bb20d40d6",
+        "id": "d25a5585f66733a6",
         "type": "function",
-        "z": "eb9cf62ca87ab4b9",
+        "z": "f108df3a26087173",
         "name": "Set Defaults",
         "func": "let preferences = flow.get('preferences') || {\n    temperature: 22,\n    light: 5,\n    sound: 3\n};\n\nif (msg.topic === 'temperature') {\n    preferences.temperature = msg.payload;\n} else if (msg.topic === 'light') {\n    preferences.light = msg.payload;\n} else if (msg.topic === 'sound') {\n    preferences.sound = msg.payload;\n}\n \nflow.set('preferences', preferences);\nmsg.payload = preferences;\nreturn msg;\n\n",
         "outputs": 1,
@@ -180,14 +180,14 @@
         "y": 380,
         "wires": [
             [
-                "b3c0e9c63d2f07de"
+                "6b3922319f4724b2"
             ]
         ]
     },
     {
-        "id": "cd1f634af3833daf",
+        "id": "92ffefcfa47aba12",
         "type": "debug",
-        "z": "eb9cf62ca87ab4b9",
+        "z": "f108df3a26087173",
         "name": "function",
         "active": true,
         "tosidebar": true,
@@ -197,14 +197,14 @@
         "targetType": "msg",
         "statusVal": "",
         "statusType": "auto",
-        "x": 860,
+        "x": 900,
         "y": 300,
         "wires": []
     },
     {
-        "id": "4b8fd3c670d277c6",
+        "id": "c27b0a2c04f69da7",
         "type": "http request",
-        "z": "eb9cf62ca87ab4b9",
+        "z": "f108df3a26087173",
         "name": "Score",
         "method": "POST",
         "ret": "obj",
@@ -224,19 +224,18 @@
                 "valueValue": "application/json"
             }
         ],
-        "x": 970,
+        "x": 1030,
         "y": 380,
         "wires": [
             [
-                "451411839402024a",
-                "98d17be707e8fcf6"
+                "47a1c33bebe33bb0"
             ]
         ]
     },
     {
-        "id": "451411839402024a",
+        "id": "47a1c33bebe33bb0",
         "type": "debug",
-        "z": "eb9cf62ca87ab4b9",
+        "z": "f108df3a26087173",
         "name": "debug 9",
         "active": true,
         "tosidebar": true,
@@ -245,32 +244,31 @@
         "complete": "false",
         "statusVal": "",
         "statusType": "auto",
-        "x": 1120,
-        "y": 460,
+        "x": 1160,
+        "y": 380,
         "wires": []
     },
     {
-        "id": "93df513e8b48e50b",
+        "id": "8bbb4467210ef9dd",
         "type": "json",
-        "z": "eb9cf62ca87ab4b9",
+        "z": "f108df3a26087173",
         "name": "",
         "property": "payload.score",
         "action": "",
         "pretty": false,
-        "x": 850,
+        "x": 890,
         "y": 440,
         "wires": [
             [
-                "4b8fd3c670d277c6",
-                "734217e4bec6dcc8",
-                "74e66de3cb2697b2"
+                "c27b0a2c04f69da7",
+                "47592514312f7490"
             ]
         ]
     },
     {
-        "id": "734217e4bec6dcc8",
+        "id": "47592514312f7490",
         "type": "debug",
-        "z": "eb9cf62ca87ab4b9",
+        "z": "f108df3a26087173",
         "name": "debug 10",
         "active": true,
         "tosidebar": true,
@@ -279,79 +277,127 @@
         "complete": "false",
         "statusVal": "",
         "statusType": "auto",
-        "x": 1000,
-        "y": 620,
+        "x": 1160,
+        "y": 440,
         "wires": []
     },
     {
-        "id": "74e66de3cb2697b2",
+        "id": "01087eecee1cfd1e",
+        "type": "http in",
+        "z": "f108df3a26087173",
+        "name": "",
+        "url": "/compare",
+        "method": "post",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 540,
+        "y": 700,
+        "wires": [
+            [
+                "71c9d604b07741fb",
+                "03be2465ca4f57b5"
+            ]
+        ]
+    },
+    {
+        "id": "71c9d604b07741fb",
+        "type": "debug",
+        "z": "f108df3a26087173",
+        "name": "debug 12",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 940,
+        "y": 700,
+        "wires": []
+    },
+    {
+        "id": "03be2465ca4f57b5",
+        "type": "function",
+        "z": "f108df3a26087173",
+        "name": "function 1",
+        "func": "let comparisonResult = msg.payload;\n\n// Process the comparison result as needed\n\nmsg.payload = comparisonResult.rooms.map(room => {\n    return {\n        roomId: room.roomId,\n        temperature: room.temperature,\n        sound: room.sound,\n        light: room.light,\n        score: room.score,\n        difference: room.difference\n    };\n});\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 760,
+        "y": 800,
+        "wires": [
+            [
+                "0b0fe6dec8011e9b"
+            ]
+        ]
+    },
+    {
+        "id": "0b0fe6dec8011e9b",
         "type": "ui-table",
-        "z": "eb9cf62ca87ab4b9",
-        "group": "7822220efa2bae28",
-        "name": "Results",
-        "label": "text",
+        "z": "f108df3a26087173",
+        "group": "9fddb19420dfef5a",
+        "name": "Result Room",
+        "label": "Better rooms",
         "order": 4,
         "width": 0,
         "height": 0,
         "maxrows": 0,
         "passthru": false,
-        "autocols": true,
+        "autocols": false,
         "showSearch": false,
         "selectionType": "none",
-        "columns": [],
+        "columns": [
+            {
+                "title": "Room ID",
+                "key": "roomId",
+                "keyType": "key",
+                "type": "text",
+                "width": "",
+                "align": "start"
+            },
+            {
+                "title": "Temperature",
+                "key": "temperature",
+                "keyType": "key",
+                "type": "text",
+                "width": "",
+                "align": "start"
+            },
+            {
+                "title": "Sound",
+                "key": "sound",
+                "keyType": "key",
+                "type": "text",
+                "width": "",
+                "align": "start"
+            },
+            {
+                "title": "Light",
+                "key": "light",
+                "keyType": "key",
+                "type": "text",
+                "width": "",
+                "align": "start"
+            }
+        ],
         "mobileBreakpoint": "sm",
         "mobileBreakpointType": "defaults",
         "action": "replace",
-        "x": 1040,
-        "y": 520,
-        "wires": [
-            [
-                "14380525502ee9f9"
-            ]
-        ]
-    },
-    {
-        "id": "14380525502ee9f9",
-        "type": "debug",
-        "z": "eb9cf62ca87ab4b9",
-        "name": "debug 11",
-        "active": true,
-        "tosidebar": true,
-        "console": false,
-        "tostatus": false,
-        "complete": "false",
-        "statusVal": "",
-        "statusType": "auto",
-        "x": 1180,
-        "y": 520,
-        "wires": []
-    },
-    {
-        "id": "98d17be707e8fcf6",
-        "type": "http request",
-        "z": "eb9cf62ca87ab4b9",
-        "name": "",
-        "method": "GET",
-        "ret": "txt",
-        "paytoqs": "ignore",
-        "url": "http://localhost:3000/compare",
-        "tls": "",
-        "persist": false,
-        "proxy": "",
-        "insecureHTTPParser": false,
-        "authType": "",
-        "senderr": false,
-        "headers": [],
-        "x": 1170,
-        "y": 320,
+        "x": 970,
+        "y": 800,
         "wires": [
             []
         ]
     },
     {
-        "id": "954f7f8db12db2cb",
+        "id": "e27f53e9c1d4f7c8",
         "type": "ui_spacer",
-        "z": "eb9cf62ca87ab4b9",
+        "z": "f108df3a26087173",
         "name": "spacer",
         "group": "77a601d0fdedb785",
         "order": 1,
@@ -359,10 +405,10 @@
         "height": 1
     },
     {
-        "id": "7822220efa2bae28",
+        "id": "9fddb19420dfef5a",
         "type": "ui-group",
         "name": "Test",
-        "page": "dea7e770e64de90d",
+        "page": "f908c2102e15f6ab",
         "width": "6",
         "height": "1",
         "order": 1,
@@ -384,14 +430,14 @@
         "className": ""
     },
     {
-        "id": "dea7e770e64de90d",
+        "id": "f908c2102e15f6ab",
         "type": "ui-page",
         "name": "Page 1",
-        "ui": "96f011156eb7c0bf",
+        "ui": "5ea5e2badddf4026",
         "path": "/page1",
         "icon": "home",
         "layout": "grid",
-        "theme": "9cc72d51b53e786f",
+        "theme": "69335720bb38269e",
         "breakpoints": [
             {
                 "name": "Default",
@@ -429,7 +475,7 @@
         "hidden": false
     },
     {
-        "id": "96f011156eb7c0bf",
+        "id": "5ea5e2badddf4026",
         "type": "ui-base",
         "name": "My Dashboard",
         "path": "/dashboard",
@@ -461,7 +507,7 @@
         "titleBarStyle": "default"
     },
     {
-        "id": "9cc72d51b53e786f",
+        "id": "69335720bb38269e",
         "type": "ui-theme",
         "name": "Default Theme",
         "colors": {

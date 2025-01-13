@@ -101,7 +101,7 @@ void loop() {
     // Read sensor values
 
     // Calculate the temperature and convert in degree
-    int val = analogRead(tempPin);                               // get analog value
+    int val = analogRead(tempPin);                               
     float resistance=(float)(1023-val)*10000/val;
     float temperature =1/(log(resistance/10000)/B+1/298.15)-273.15;
     

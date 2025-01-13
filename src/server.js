@@ -131,7 +131,7 @@ const dbURI = 'mongodb+srv://ddcd:ddcd@rooms.3och0.mongodb.net/?retryWrites=true
         });
 
         const askForChoice = () => {
-          rl.question('SERVER : Choose an option:\n1. Register a new room\n2. Launch server with another function\nEnter your choice: ', async (choice) => {
+          rl.question('SERVER : Choose an option:\n1. Register a new room\n2. Compare existing rooms\nEnter your choice: ', async (choice) => {
             if (choice === '1') {
               const portPath = await findArduino();
               if (!portPath) {
@@ -159,7 +159,7 @@ const dbURI = 'mongodb+srv://ddcd:ddcd@rooms.3och0.mongodb.net/?retryWrites=true
                       //Ask for the user's choice again
                       askForChoice();
                     } catch (error) {
-                      console.error('SERVER : Error saving data to MongoDB:', error);
+                      console.error('SERVER : Error saving data to MongoDB (Missing data):', error);
                     }
                   }
                 });
@@ -181,9 +181,4 @@ const dbURI = 'mongodb+srv://ddcd:ddcd@rooms.3och0.mongodb.net/?retryWrites=true
     .catch(err => console.log(err));
 })();
 
-// Define the other function
-function otherFunction() {
-  console.log('SERVER : Executing other function...');
-  // Add the implementation of the other function here
-}
 

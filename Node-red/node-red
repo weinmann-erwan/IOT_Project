@@ -277,8 +277,8 @@
         "complete": "false",
         "statusVal": "",
         "statusType": "auto",
-        "x": 1160,
-        "y": 440,
+        "x": 1040,
+        "y": 500,
         "wires": []
     },
     {
@@ -320,7 +320,7 @@
         "id": "03be2465ca4f57b5",
         "type": "function",
         "z": "f108df3a26087173",
-        "name": "function 1",
+        "name": "SetDefaultTable",
         "func": "let comparisonResult = msg.payload;\n\n// Process the comparison result as needed\n\nmsg.payload = comparisonResult.rooms.map(room => {\n    return {\n        roomId: room.roomId,\n        temperature: room.temperature,\n        sound: room.sound,\n        light: room.light,\n        score: room.score,\n        difference: room.difference\n    };\n});\nreturn msg;",
         "outputs": 1,
         "timeout": 0,
@@ -328,7 +328,7 @@
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 760,
+        "x": 780,
         "y": 800,
         "wires": [
             [
@@ -407,7 +407,7 @@
     {
         "id": "9fddb19420dfef5a",
         "type": "ui-group",
-        "name": "Test",
+        "name": "Room Preference",
         "page": "f908c2102e15f6ab",
         "width": "6",
         "height": "1",
@@ -432,32 +432,32 @@
     {
         "id": "f908c2102e15f6ab",
         "type": "ui-page",
-        "name": "Page 1",
+        "name": "IOT Project",
         "ui": "5ea5e2badddf4026",
-        "path": "/page1",
+        "path": "/RoomPreference",
         "icon": "home",
         "layout": "grid",
         "theme": "69335720bb38269e",
         "breakpoints": [
             {
                 "name": "Default",
-                "px": 0,
-                "cols": 3
+                "px": "0",
+                "cols": "3"
             },
             {
                 "name": "Tablet",
-                "px": 576,
-                "cols": 6
+                "px": "576",
+                "cols": "6"
             },
             {
                 "name": "Small Desktop",
-                "px": 768,
-                "cols": 9
+                "px": "768",
+                "cols": "9"
             },
             {
                 "name": "Desktop",
-                "px": 1024,
-                "cols": 12
+                "px": "1024",
+                "cols": "12"
             }
         ],
         "order": 1,

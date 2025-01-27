@@ -9,7 +9,12 @@ import axios from 'axios';
 import readline from 'readline';
 import { exec } from 'child_process';
 import os from 'os';
+import yamljs from 'yamljs';
+import path from 'path';
+import { fileURLToPath } from 'url';
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
 app.use(json());
@@ -28,6 +33,11 @@ const dataSchema = new Schema({
 });
 
 const Data = model('Data', dataSchema);
+
+const swaggerDocument = yamljs.load(path.join(__dirname, 'swagger.yaml'));
+
+// Swagger UI setup
+app.use('/api-docs', serve, setup(swaggerDocument));
 
 // Function to compare scores
 async function compare(score) {

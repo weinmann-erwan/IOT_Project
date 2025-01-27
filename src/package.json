@@ -18,6 +18,7 @@
     "node-red": "^4.0.8",
     "serialport": "^13.0.0",
     "swagger-jsdoc": "^6.2.8",
-    "swagger-ui-express": "^5.0.1"
+    "swagger-ui-express": "^5.0.1",
+    "yamljs": "^0.3.0"
   }
 }

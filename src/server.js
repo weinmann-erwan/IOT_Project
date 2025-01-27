@@ -24,12 +24,13 @@ let waiting = false;
 
 // Define a schema and model for the data
 const dataSchema = new Schema({
-  roomId: String,
+  roomId: { type: String, unique: true },
   temperature: Number,
   sound: Number,
   light: Number,
   score: Number,
-  timestamp: { type: Date, default: Date.now }
+  timestamp: { type: Date, default: Date.now },
+  available: { type: Boolean, default: true }
 });
 
 const Data = model('Data', dataSchema);

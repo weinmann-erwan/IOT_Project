@@ -1,0 +1,62 @@
+openapi: 3.0.0
+info:
+  title: IOT Project API
+  version: 1.0.0
+  description: API documentation for the IOT Project
+servers:
+  - url: http://localhost:3000
+    description: Local server
+paths:
+  /data:
+    post:
+      summary: Receive data from Node-RED
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                temperature:
+                  type: number
+                sound:
+                  type: number
+                light:
+                  type: number
+                score:
+                  type: number
+      responses:
+        200:
+          description: Data received successfully
+  /compare:
+    post:
+      summary: Compare existing rooms with received score
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                receivedScore:
+                  type: number
+                rooms:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      roomId:
+                        type: string
+                      temperature:
+                        type: number
+                      sound:
+                        type: number
+                      light:
+                        type: number
+                      score:
+                        type: number
+                      difference:
+                        type: number
+      responses:
+        200:
+          description: Comparison result

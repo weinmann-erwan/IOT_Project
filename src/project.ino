@@ -2,12 +2,13 @@
 #include "rgb_lcd.h"
 #include <Arduino.h>
 
+// Initialize the LCD object
 rgb_lcd lcd;
 
+// Define RGB color values
 const int colorR = 255;
 const int colorG = 0;
 const int colorB = 255;
-
 
 // Pins for sensors
 int B = 3975;            // B value of the thermistor
@@ -15,50 +16,48 @@ const int tempPin = A0;
 const int soundPin = A1;
 const int lightPin = A2;
 
+// Structure to define a range with minimum and maximum values
 struct Range {
     float min;
     float max;
 };
 
-// Plages pour la normalisation
-const Range tempRange = {15.0, 25.0};    // Plage pour la température
-const Range lightRange = {0.0, 10.0};    // Plage pour la lumière
-const Range soundRange = {0.0, 10.0};    // Plage pour le son
+// Ranges for normalization
+const Range tempRange = {15.0, 25.0};    // Range for temperature
+const Range lightRange = {0.0, 10.0};    // Range for light
+const Range soundRange = {0.0, 10.0};    // Range for sound
 
-// Pondérations pour le score
+// Weights for the score calculation
 const float weightTemp = 0.34;
 const float weightLight = 0.33;
 const float weightSound = 0.33;
 
-// Fonction pour normaliser une valeur dans une plage
+// Function to normalize a value within a range
 float normalize(float value, float min, float max) {
     float normalized = (value - min) / (max - min);
-    //return constrain(normalized, 0.0, 1.0); // Contraindre entre 0 et 1
+    //return constrain(normalized, 0.0, 1.0); // Constrain between 0 and 1
     return normalized;
 }
 
-// Fonction pour calculer le score
+// Function to calculate the score
 float calculateScore(float temp, float sound, float light) {
     float normalizedTemp = normalize(temp, tempRange.min, tempRange.max);
-    Serial.println("Température normalisée : " + String(normalizedTemp));
+    Serial.println("Normalized Temperature: " + String(normalizedTemp));
     float normalizedSound = normalize(sound, soundRange.min, soundRange.max);
-    Serial.println("Son normalisé : " + String(normalizedSound));
+    Serial.println("Normalized Sound: " + String(normalizedSound));
     float normalizedLight = normalize(light, lightRange.min, lightRange.max);
-    Serial.println("Lumière normalisée : " + String(normalizedLight));
+    Serial.println("Normalized Light: " + String(normalizedLight));
     
-
-    // Calcul du score pondéré
+    // Calculate the weighted score
     float score = (weightTemp * normalizedTemp) +
                   (weightSound * normalizedSound) +
                   (weightLight * normalizedLight);
 
-    Serial.println("Score : " + String(score));
+    Serial.println("Score: " + String(score));
     return score;
 }
 
-
 void setup() {
-
   // Initialize LCD
   lcd.begin(16, 2);
   lcd.setRGB(colorR, colorG, colorB);
@@ -77,7 +76,7 @@ void setup() {
 
   delay(2000);
 
-  Serial.println("ARDUINO : Waiting for room ID...");
+  Serial.println("ARDUINO: Waiting for room ID...");
 }
 
 void loop() {
@@ -95,18 +94,17 @@ void loop() {
     // Wait for server input
   }
   room_id = Serial.readStringUntil('\n');
-  Serial.println("ARDUINO : Room ID set to: " + room_id);
+  Serial.println("ARDUINO: Room ID set to: " + room_id);
 
   for (int i = 0; i < numReadings; i++) {
     // Read sensor values
 
-    // Calculate the temperature and convert in degree
+    // Calculate the temperature and convert to degrees
     int val = analogRead(tempPin);                               
-    float resistance=(float)(1023-val)*10000/val;
-    float temperature =1/(log(resistance/10000)/B+1/298.15)-273.15;
+    float resistance = (float)(1023 - val) * 10000 / val;
+    float temperature = 1 / (log(resistance / 10000) / B + 1 / 298.15) - 273.15;
     
-
-     // Adjust conversion for your sensor
+    // Adjust conversion for your sensor
     float s = analogRead(soundPin);
     float sound = (s / 1023.0) * 10.0;
 
@@ -128,7 +126,7 @@ void loop() {
     delay(interval);
   }
 
-    // Compute the averages
+  // Compute the averages
   float avgTemperature = totalTemperature / numReadings;
   float avgSound = totalSound / numReadings;
   float avgLight = totalLight / numReadings;
@@ -136,7 +134,7 @@ void loop() {
   // Calculate score
   float score = calculateScore(avgTemperature, avgSound, avgLight);
 
-  // Create a data collection to sent to the server
+  // Create a data collection to send to the server
   String data = room_id + "," + String(avgTemperature, 1) + "," + String(avgSound, 1) + "," + String(avgLight, 1) + "," + String(score);
   Serial.println(data);
 
@@ -147,8 +145,7 @@ void loop() {
   lcd.setCursor(0, 1);
   lcd.print("L:" + String(avgLight, 1) + " Sc:" + String(score));
 
-  
-  Serial.println("ARDUINO : Finish");
+  Serial.println("ARDUINO: Finish");
 
   // Stop the code
   while (true) {
